@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="計分板">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f1115">
+<title>多運動計分板 Scoreboard</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy4zLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDMyIDMyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxyZWN0IHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgcng9IjMiIGZpbGw9IiMwZjExNSIvPjxyZWN0IHg9IjMiIHk9IjQiIHdpZHRoPSIxMSIgaGVpZ2h0PSIxMyIgZmlsbD0iIzNiODJmNiIvPjxyZWN0IHg9IjE4IiB5PSI0IiB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIGZpbGw9IiNlZjQ0NDRiIi8+PHJlY3QgeD0iNiIgeT0iNyIgd2lkdGg9IjQiIGhlaWdodD0iMSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjkiIHk9IjgiIHdpZHRoPSIxIiBoZWlnaHQ9IjIiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2IiB5PSIxMCIgd2lkdGg9IjQiIGhlaWdodD0iMSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjYiIHk9IjExIiB3aWR0aD0iMSIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iNiIgeT0iMTMiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIyMSIgeT0iNyIgd2lkdGg9IjQiIGhlaWdodD0iMSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjI0IiB5PSI4IiB3aWR0aD0iMSIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjIiIHk9IjEwIiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjQiIHk9IjExIiB3aWR0aD0iMSIgaGVpZ2h0PSIyIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMjEiIHk9IjEzIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMTUiIHk9IjkiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIxNSIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIzIiB5PSIyMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIgZmlsbD0iI2Y1OWUwYiIvPjxyZWN0IHg9IjEwIiB5PSIyMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIgZmlsbD0iI2ZjY2MxNSIvPjxyZWN0IHg9IjE3IiB5PSIyMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIgZmlsbD0iIzIyYzU1ZSIvPjxyZWN0IHg9IjI0IiB5PSIyMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIgZmlsbD0iI2E3OGJmYSIvPjwvc3ZnPg">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=2">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#1a1d24; --panel2:#232730; --line:#2e323c;
+    --txt:#e8eaed; --muted:#9aa0aa; --accent:#4f9dff; --accent2:#ffce4f;
+    --good:#3ddc84; --bad:#ff5c5c; --lead:#1f3a2e;
+    --eagle:#b06bff; --birdie:#3ddc84; --par:#5a6170; --bogey:#ffb84d; --dbogey:#ff7a45; --other:#ff5c5c;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    -webkit-font-smoothing:antialiased; padding-bottom:env(safe-area-inset-bottom);
+    user-select:none; -webkit-user-select:none;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:8px 10px 30px;}
+
+  /* Tabs */
+  .tabs{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; position:sticky; top:0; z-index:10;
+    background:var(--bg); padding:6px 0 8px;}
+  .tab{
+    min-height:60px; border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    border-radius:14px; font-size:13px; font-weight:600; cursor:pointer; display:flex;
+    flex-direction:column; align-items:center; justify-content:center; gap:2px; transition:.15s;
+  }
+  .tab .ic{font-size:24px; line-height:1;}
+  .tab.active{background:var(--accent); color:#06121f; border-color:var(--accent); box-shadow:0 4px 14px rgba(79,157,255,.3);}
+  .tab:active{transform:scale(.96);}
+
+  .view{display:none;}
+  .view.active{display:block; animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .head{display:flex; align-items:center; justify-content:space-between; margin:6px 2px 10px;}
+  .head h2{font-size:18px; margin:0; font-weight:700;}
+  .head .sub{font-size:12px; color:var(--muted); margin-top:2px;}
+  .help{
+    width:40px; height:40px; min-width:40px; border-radius:50%; border:1px solid var(--line);
+    background:var(--panel); color:var(--accent); font-size:18px; font-weight:700; cursor:pointer;
+  }
+  .help:active{transform:scale(.92);}
+
+  /* Match-over banner */
+  .win-banner{
+    background:linear-gradient(180deg,#2a2410,#1a1d24); border:1px solid var(--accent2);
+    border-radius:14px; padding:12px 14px; text-align:center; font-weight:800; font-size:16px;
+    color:var(--accent2); margin:0 0 10px; animation:fade .3s ease;
+  }
+  .win-banner .ctl{margin-top:10px; max-width:220px;}
+
+  /* Team / player panels — now large gesture surfaces */
+  .panels{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .panel{
+    position:relative; overflow:hidden;
+    background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:16px 10px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:200px; cursor:pointer; transition:background .2s,border-color .2s,filter .25s,opacity .25s;
+  }
+  .panel.lead{background:var(--lead); border-color:#2f5e49;}
+  .panel.serving{border-color:var(--accent2); box-shadow:0 0 0 2px rgba(255,206,79,.25) inset;}
+  .panel.winner{border-color:var(--accent2);
+    box-shadow:0 0 0 2px rgba(255,206,79,.45) inset, 0 6px 22px rgba(255,206,79,.18);}
+  .panel.loser{filter:grayscale(.6) brightness(.62); opacity:.72;}
+  .pname{
+    background:transparent; border:none; color:var(--txt); font-size:16px; font-weight:700;
+    text-align:center; width:100%; padding:4px; border-bottom:1px dashed transparent; position:relative; z-index:2;
+  }
+  .pname:focus{outline:none; border-bottom-color:var(--line);}
+  .badge{font-size:11px; font-weight:700; color:#06121f; background:var(--accent2);
+    padding:2px 8px; border-radius:20px; margin-top:4px; min-height:18px; opacity:0;}
+  .badge.on{opacity:1;}
+  .score{font-size:64px; font-weight:800; line-height:1; margin:6px 0; font-variant-numeric:tabular-nums;}
+  .sub-counter{font-size:13px; color:var(--muted); margin-bottom:4px;}
+  .pt-hint{font-size:12px; font-weight:700; color:var(--accent2); min-height:16px; margin-bottom:2px;}
+  .tap-hint{font-size:11px; color:var(--muted); margin-top:8px; opacity:.85;}
+
+  /* Gesture feedback */
+  @keyframes fxTap{0%{transform:scale(1)} 45%{transform:scale(1.04)} 100%{transform:scale(1)}}
+  .panel.fx-tap{animation:fxTap .22s ease;}
+  @keyframes fxUp{
+    0%{box-shadow:inset 0 60px 40px -30px rgba(61,220,132,0)}
+    35%{box-shadow:inset 0 60px 40px -30px rgba(61,220,132,.6)}
+    100%{box-shadow:inset 0 60px 40px -30px rgba(61,220,132,0)}}
+  .panel.fx-up{animation:fxUp .5s ease;}
+  @keyframes fxDown{
+    0%{box-shadow:inset 0 -60px 40px -30px rgba(255,92,92,0)}
+    35%{box-shadow:inset 0 -60px 40px -30px rgba(255,92,92,.6)}
+    100%{box-shadow:inset 0 -60px 40px -30px rgba(255,92,92,0)}}
+  .panel.fx-down{animation:fxDown .5s ease;}
+
+  /* Crown + win stamp */
+  .crown{position:absolute; top:4px; left:50%; font-size:22px; z-index:3; pointer-events:none;
+    transform:translate(-50%,-2px); animation:crownDrop 1.5s ease forwards;}
+  @keyframes crownDrop{
+    0%{transform:translate(-50%,-34px) scale(2.4); opacity:0}
+    35%{transform:translate(-50%,-2px) scale(2.4); opacity:1}
+    100%{transform:translate(-50%,-2px) scale(1); opacity:1}}
+  .stamp{position:absolute; top:50%; left:50%; z-index:3; pointer-events:none;
+    transform:translate(-50%,-50%) rotate(-12deg); font-size:80px; font-weight:900; color:var(--accent2);
+    text-shadow:0 2px 12px rgba(0,0,0,.55); animation:stampPop .45s ease both;}
+  @keyframes stampPop{
+    0%{transform:translate(-50%,-50%) rotate(-12deg) scale(2.6); opacity:0}
+    100%{transform:translate(-50%,-50%) rotate(-12deg) scale(1); opacity:.9}}
+
+  /* Footer controls — smaller, less prominent */
+  .controls{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .ctl{
+    flex:1 1 auto; min-height:44px; min-width:96px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--txt); font-size:14px; font-weight:600; cursor:pointer; padding:0 12px;
+  }
+  .ctl:active{transform:scale(.97);}
+  .ctl:disabled{opacity:.4; cursor:not-allowed;}
+  .ctl.warn{color:var(--bad); border-color:#5a2e2e;}
+  .ctl.primary{background:var(--accent); color:#06121f; border-color:var(--accent);}
+
+  /* Golf */
+  .golf-hole{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:8px 0 4px;}
+  .holebox{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px 14px; text-align:center;}
+  .holebox .lbl{font-size:12px; color:var(--muted);}
+  .holebox .hnum{font-size:26px; font-weight:800;}
+  .par-edit{display:flex; align-items:center; gap:8px;}
+  .par-edit .pbtn{width:44px; height:44px; border-radius:10px; border:1px solid var(--line);
+    background:var(--panel2); color:var(--txt); font-size:22px; font-weight:800; cursor:pointer;}
+  .par-edit .pbtn:active{transform:scale(.92);}
+  .par-val{font-size:15px; min-width:64px; text-align:center;}
+  .golf-grid{display:grid; grid-template-columns:repeat(9,1fr); gap:4px; margin-top:12px;}
+  .gcell{aspect-ratio:1; border-radius:8px; background:var(--panel2); border:1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px;}
+  .gcell .gh{font-size:9px; color:var(--muted); line-height:1;}
+  .gcell .gs{font-weight:800; font-size:15px;}
+  .gcell.cur{outline:2px solid var(--accent);}
+  .gcell.eagle{background:var(--eagle); color:#fff; border-color:var(--eagle);}
+  .gcell.birdie{background:var(--birdie); color:#06121f; border-color:var(--birdie);}
+  .gcell.par{background:var(--par); color:#fff; border-color:var(--par);}
+  .gcell.bogey{background:var(--bogey); color:#06121f; border-color:var(--bogey);}
+  .gcell.dbogey{background:var(--dbogey); color:#fff; border-color:var(--dbogey);}
+  .gcell.other{background:var(--other); color:#fff; border-color:var(--other);}
+  .golf-legend{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:11px; color:var(--muted);}
+  .golf-legend span{display:flex; align-items:center; gap:4px;}
+  .golf-legend i{width:12px; height:12px; border-radius:3px; display:inline-block;}
+  /* single-player golf summary */
+  .gsummary{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px;}
+  .gs-item{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center;}
+  .gs-item .gs-label{font-size:12px; color:var(--muted); margin-bottom:4px;}
+  .gs-item .gs-value{font-size:28px; font-weight:800;}
+
+  /* Settings */
+  .settings-section{margin-bottom:24px;}
+  .settings-section h3{font-size:16px; margin:0 0 10px; font-weight:700;}
+  .settings-row{display:flex; align-items:center; justify-content:space-between;
+    padding:12px 14px; background:var(--panel); border:1px solid var(--line); border-radius:14px; margin-bottom:8px;}
+  .settings-label{font-size:15px; font-weight:600;}
+  .settings-value{font-size:14px; color:var(--muted);}
+  .toggle{display:flex; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+  .toggle-btn{flex:1; min-height:40px; padding:0 16px; border:none; background:transparent;
+    color:var(--muted); font-size:14px; font-weight:600; cursor:pointer; transition:.15s;}
+  .toggle-btn.active{background:var(--accent); color:#06121f;}
+  .toggle-btn:active{transform:scale(.97);}
+  .par-grid{display:grid; grid-template-columns:repeat(9,1fr); gap:4px; margin-top:8px;}
+  .par-cell{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 4px;
+    text-align:center; font-size:13px;}
+  .par-cell .hole-num{font-size:10px; color:var(--muted);}
+  .par-cell .par-num{font-size:20px; font-weight:800;}
+  .par-cell .pbtn{width:28px; height:28px; border-radius:6px; border:none; background:var(--accent);
+    color:#06121f; font-size:18px; font-weight:800; cursor:pointer;}
+  .par-cell .pbtn:active{transform:scale(.9);}
+
+  /* Modal */
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center;
+    justify-content:center; z-index:50; padding:18px;}
+  .modal.on{display:flex;}
+  .modal-card{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px;
+    max-width:480px; width:100%; max-height:80vh; overflow:auto;}
+  .modal-card h3{margin:0 0 12px; font-size:18px;}
+  .modal-card ul{margin:0; padding-left:20px; line-height:1.7; font-size:14px; color:var(--txt);}
+  .modal-card .close{margin-top:16px; width:100%;}
+
+  .switched{position:fixed; left:50%; top:18px; transform:translateX(-50%); background:var(--accent);
+    color:#06121f; padding:8px 16px; border-radius:20px; font-weight:700; font-size:14px; z-index:60;
+    opacity:0; pointer-events:none; transition:.25s;}
+  .switched.on{opacity:1;}
+
+  /* Singles / Doubles mode toggle */
+  .modebar{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 2px 10px;}
+  .modebtn{min-height:42px; border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; transition:.15s;}
+  .modebtn.active{background:var(--accent); color:#06121f; border-color:var(--accent);
+    box-shadow:0 3px 12px rgba(79,157,255,.28);}
+  .modebtn:active{transform:scale(.97);}
+  /* Pickleball doubles x-y-z announcement */
+  .serve-anno{font-size:20px; font-weight:800; color:var(--accent2); letter-spacing:2px;
+    font-variant-numeric:tabular-nums; margin:2px 0;}
+  /* Settings done button */
+  .settings-done{width:100%; margin-top:24px; min-height:48px; border-radius:14px;
+    background:var(--accent); color:#06121f; border:1px solid var(--accent);
+    font-size:15px; font-weight:700; cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-sport="volleyball"><span class="ic">🏐</span><span data-i18n="tab_volleyball">排球</span></button>
+    <button class="tab" data-sport="badminton"><span class="ic">🏸</span><span data-i18n="tab_badminton">羽毛球</span></button>
+    <button class="tab" data-sport="pickleball"><span class="ic">🥒</span><span data-i18n="tab_pickleball">皮克球</span></button>
+    <button class="tab" data-sport="golf"><span class="ic">⛳</span><span data-i18n="tab_golf">高爾夫</span></button>
+    <button class="tab" data-sport="settings"><span class="ic">⚙️</span><span data-i18n="tab_settings">設定</span></button>
+  </nav>
+
+  <section class="view" id="view-volleyball"></section>
+  <section class="view" id="view-badminton"></section>
+  <section class="view" id="view-pickleball"></section>
+  <section class="view" id="view-golf"></section>
+  <section class="view" id="view-settings"></section>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <h3 id="modal-title">規則</h3>
+    <div id="modal-body"></div>
+    <button class="ctl close" onclick="document.getElementById('modal').classList.remove('on')">關閉</button>
+  </div>
+</div>
+<div class="switched" id="toast">已交換場地</div>
+
+<script>
+"use strict";
+const VER = "scoreboard.v3";
+
+/* ====================== i18n global system ====================== */
+const LANGS = {
+  zh: {
+    tab_volleyball:'排球', tab_badminton:'羽毛球', tab_pickleball:'皮克球',
+    tab_golf:'高爾夫', tab_settings:'設定',
+    // Settings
+    settings_language:'語言', settings_select:'選擇語言',
+    settings_golf:'高爾夫設定', settings_golf_hint:'自訂各洞 Par',
+    settings_golf_global:'全域 Par 預設值', settings_golf_default4:'預設 Par 4',
+    settings_data:'資料', settings_clear_data:'清除所有資料',
+    settings_clear_confirm:'確定要清除所有計分資料嗎？此操作無法復原。',
+    settings_done:'完成',
+    // Volleyball
+    vb_title:'排球', vb_sets:'局', vb_matchOver:'勝出！比賽結束',
+    vb_firstHalf:'前半', vb_suddenDeath:'前20分後採長局制（領先2分）',
+    vb_tapInfo:'點一下 / 上滑 = +1，下滑 = −1',
+    vb_endSet:'結束此局', vb_switch:'換邊', vb_reset:'重置', vb_gamePoint:'局點',
+    // Badminton
+    bd_title:'羽毛球', bd_singles:'單打', bd_doubles:'雙打',
+    bd_games:'局', bd_matchOver:'勝出！比賽結束',
+    bd_gamePoint:'局點', bd_serveSide:'發球方',
+    bd_switchCourt:'換場', bd_endGame:'結束此局', bd_serve:'指定發球方', bd_reset:'重置',
+    bd_sideOut:'換發球',
+    // Pickleball
+    pk_title:'皮克球', pk_singles:'單打', pk_doubles:'雙打',
+    pk_matchOver:'勝出！比賽結束', pk_fault:'失誤',
+    pk_endMatch:'結束比賽', pk_reset:'重置',
+    // Golf
+    gf_title:'高爾夫', gf_hole:'洞', gf_totalScore:'總桿數',
+    gf_vsPar:'對標準桿', gf_completed:'已完成', gf_par:'標準桿',
+    gf_scores:'桿數', gf_perHole:'各洞紀錄', gf_result:'結果',
+    gf_noResult:'尚未完成所有洞',
+    gf_reset:'重置', gf_prevHole:'上一洞', gf_nextHole:'下一洞',
+    gf_eagle:'≤−2 信天翁', gf_birdie:'−1 小金', gf_par:'0 Par',
+    gf_bogey:'+1 柏忌', gf_dbogey:'+2 -double Bogey', gf_other:'+3 以上',
+    gf_summary:'總結', gf_totalHoles:'完成洞口',
+    // Rules
+    rules_vb:'排球規則 (FIVB)',
+    rules_bd:'羽毛球規則 (BWF)',
+    rules_pk:'皮克球規則',
+    rules_gf:'高爾夫規則（桿數賽）',
+  },
+  en: {
+    tab_volleyball:'Volleyball', tab_badminton:'Badminton', tab_pickleball:'Pickleball',
+    tab_golf:'Golf', tab_settings:'Settings',
+    // Settings
+    settings_language:'Language', settings_select:'Select Language',
+    settings_golf:'Golf Settings', settings_golf_hint:'Customize par per hole',
+    settings_golf_global:'Global Par Default', settings_golf_default4:'Default Par 4',
+    settings_data:'Data', settings_clear_data:'Clear All Data',
+    settings_clear_confirm:'Are you sure you want to clear all scoreboard data? This cannot be undone.',
+    settings_done:'Done',
+    // Volleyball
+    vb_title:'Volleyball', vb_sets:'sets', vb_matchOver:'wins! Match over.',
+    vb_firstHalf:'Best of 5 · First 4 games to 25', vb_suddenDeath:'Sudden death (lead by 2) after 20',
+    vb_tapInfo:'Tap / swipe up = +1, swipe down = −1',
+    vb_endSet:'End Set', vb_switch:'Switch Sides', vb_reset:'Reset', vb_gamePoint:'Set Point',
+    // Badminton
+    bd_title:'Badminton', bd_singles:'Singles', bd_doubles:'Doubles',
+    bd_games:'games', bd_matchOver:'wins! Match over.',
+    bd_gamePoint:'Game Point', bd_serveSide:'Server',
+    bd_switchCourt:'Swap Court', bd_endGame:'End Game', bd_serve:'Set Server', bd_reset:'Reset',
+    bd_sideOut:'Side Out',
+    // Pickleball
+    pk_title:'Pickleball', pk_singles:'Singles', pk_doubles:'Doubles',
+    pk_matchOver:'wins! Match over.', pk_fault:'Fault',
+    pk_endMatch:'End Match', pk_reset:'Reset',
+    // Golf
+    gf_title:'Golf', gf_hole:'Hole', gf_totalScore:'Total Score',
+    gf_vsPar:'vs Par', gf_completed:'Completed', gf_par:'Par',
+    gf_scores:'Scores', gf_perHole:'Per-Hole Record', gf_result:'Result',
+    gf_noResult:'Complete all 18 holes first',
+    gf_reset:'Reset', gf_prevHole:'Prev Hole', gf_nextHole:'Next Hole',
+    gf_eagle:'≤−2 Eagle', gf_birdie:'−1 Birdie', gf_par:'0 Par',
+    gf_bogey:'+1 Bogey', gf_dbogey:'+2 Double Bogey', gf_other:'+3+ Other',
+    gf_summary:'Summary', gf_totalHoles:'Holes Completed',
+    // Rules
+    rules_vb:'Volleyball Rules (FIVB)',
+    rules_bd:'Badminton Rules (BWF)',
+    rules_pk:'Pickleball Rules',
+    rules_gf:'Golf Rules (Stroke Play)',
+  }
+};
+
+// Load language; default 'zh'
+let currentLang = loadLang('lang', 'zh');
+
+function t(key) {
+  const dict = LANGS[currentLang] || LANGS.zh;
+  return dict[key] || key;
+}
+
+function updateI18nTexts() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const dict = LANGS[currentLang];
+    el.textContent = dict[key] || key;
+  });
+}
+
+/* ---------- shared helpers ---------- */
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+function esc(x){ return (x==null?"":""+x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function load(key, fallback){
+  try{ const r=localStorage.getItem(VER+"."+key); return r?JSON.parse(r):fallback; }
+  catch(e){ return fallback; }
+}
+function loadLang(key, fallback){
+  try{ const r=localStorage.getItem(key); return r||fallback; }
+  catch(e){ return fallback; }
+}
+function saveLang(lang){ localStorage.setItem('lang', lang); }
+function persist(key, data){ localStorage.setItem(VER+"."+key, JSON.stringify(data)); }
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'),1300);
+}
+function showRules(title, items){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML="<ul><li>"+items.join("</li><li>")+"</li></ul>";
+  document.getElementById('modal').classList.add('on');
+}
+const MINUS="−"; // U+2212 proper minus sign for golf scores
+
+/* ---------- shared gesture utility ---------- */
+function attachScoreGesture(node, opts){
+  const TH=30; // min swipe distance px; below this => tap
+  let sx=0, sy=0, tracking=false;
+  node.style.touchAction="none";
+  node.addEventListener('pointerdown', e=>{
+    if(e.target.closest('input,button,a,textarea,select')) return; // let real controls work
+    if(opts.enabled && !opts.enabled()) return;
+    tracking=true; sx=e.clientX; sy=e.clientY;
+    try{ node.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  node.addEventListener('pointerup', e=>{
+    if(!tracking) return; tracking=false;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(Math.abs(dy)>=TH && Math.abs(dy)>=Math.abs(dx)){
+      if(dy<0){ opts.onInc && opts.onInc('up'); }
+      else    { opts.onDec && opts.onDec('down'); }
+    } else if(Math.abs(dx)<TH && Math.abs(dy)<TH){
+      opts.onInc && opts.onInc('tap');
+    }
+  });
+  node.addEventListener('pointercancel', ()=>{ tracking=false; });
+}
+
+/* ============================================================
+   VOLLEYBALL — FIVB rally point, best-of-5, auto win-by-2
+   ============================================================ */
+const Volleyball = (function(){
+  const KEY="volleyball";  // storage key: scoreboard.v3.volleyball
+  let s, root, fx=null, crown=null;
+  function fresh(){ return { names:["主隊","客隊"], score:[0,0], sets:[0,0], setNo:1, matchOver:false, winner:null }; }
+  function target(){ return s.setNo>=5 ? 15 : 25; }
+  function load_(){
+    try{ s=load(KEY, fresh()); } catch(e){ s=fresh(); }
+    if(!Array.isArray(s.names)||!Array.isArray(s.score)){ s=fresh(); }
+    if(s.matchOver===undefined){ s.matchOver=false; s.winner=null; }
+  }
+  function save(){ persist(KEY, s); }
+  function mount(elm){ root=elm; load_(); render(); }
+
+  function add(i,kind){ if(s.matchOver) return; crown=null; fx={i,kind:kind==='up'?'up':'tap'}; s.score[i]++; afterScore(i); }
+  function dec(i){ if(s.matchOver) return; crown=null; fx={i,kind:'down'}; s.score[i]=Math.max(0,s.score[i]-1); save(); render(); }
+  function afterScore(i){
+    const t=target();
+    if(s.score[i]>=t && s.score[i]-s.score[1-i]>=2){ endSet(false); return; }
+    save(); render();
+  }
+  function endSet(manual){
+    const [a,b]=s.score;
+    if(a===b){ if(manual) alert("目前平分，無法結束此局。"); return; }
+    const w = a>b?0:1;
+    s.sets[w]++; crown=w; fx=null;
+    if(s.sets[w]>=3){ s.matchOver=true; s.winner=w; } // keep final score on screen
+    else { s.score=[0,0]; s.setNo++; }
+    save(); render();
+  }
+  function switchSides(){ s.names.reverse(); s.score.reverse(); s.sets.reverse(); if(s.winner!=null)s.winner=1-s.winner; crown=null; fx=null; save(); render(); toast(currentLang==='zh'?"已交換場地":"Sides swapped"); }
+  function reset(skip){
+    if(!skipConfirm) return;
+    s=fresh(); crown=null; fx=null; save(); render();
+  }
+  let skipConfirm = false;
+  reset.skipConfirm = function(){ skipConfirm = true; skipConfirm = false; };
+  function resetMain(skip){
+    if(!skip && !confirm(currentLang==='zh'?"確定要重設整場排球比賽嗎？":"Reset entire volleyball match?")) return;
+    skipConfirm = false;
+    s=fresh(); crown=null; fx=null; save(); render();
+  }
+  function setPointHint(i){
+    const t=target(), me=s.score[i], opp=s.score[1-i];
+    return me>=t-1 && me-opp>=1;
+  }
+  function render(){
+    const f=fx; fx=null;
+    const t=target();
+    root.innerHTML="";
+    root.appendChild(el(`<div class="head">
+      <div><h2>🏐 ${t('vb_title')}</h2><div class="sub">${t('vb_firstHalf')} · ${t('vb_sets')} ${s.setNo} · ${t(t('vb_sets'))} ${t('vb_suddenDeath')}</div></div>
+      <button class="help" data-h>?</button></div>`));
+    if(s.matchOver) root.appendChild(el(`<div class="win-banner">🏆 ${esc(s.names[s.winner])} ${t('vb_matchOver')}</div>`));
+    const panels=el(`<div class="panels"></div>`);
+    [0,1].forEach(i=>{
+      const lead = s.score[i]>s.score[1-i] && !s.matchOver;
+      const fxCls = (f && f.i===i) ? 'fx-'+f.kind : '';
+      const moCls = s.matchOver ? (s.winner===i?'winner':'loser') : '';
+      const showCrown = crown===i || (s.matchOver && s.winner===i);
+      const p=el(`<div class="panel ${lead?'lead':''} ${fxCls} ${moCls}" data-i="${i}">
+        ${showCrown?'<div class="crown">👑</div>':''}
+        ${(s.matchOver&&s.winner===i)?'<div class="stamp">勝</div>':''}
+        <input class="pname" value="${esc(s.names[i])}" data-name="${i}">
+        <div class="sub-counter">${t('vb_sets')}: ${s.sets[i]}</div>
+        <div class="pt-hint">${setPointHint(i)?'⚡ '+t('vb_gamePoint'):''}</div>
+        <div class="score">${s.score[i]}</div>
+        <div class="tap-hint">${t('vb_tapInfo')}</div>
+      </div>`);
+      panels.appendChild(p);
+    });
+    root.appendChild(panels);
+    root.appendChild(el(`<div class="controls">
+      <button class="ctl" data-end ${s.matchOver?'disabled':''}>${t('vb_endSet')}</button>
+      <button class="ctl" data-switch>${t('vb_switch')}</button>
+      <button class="ctl warn" data-reset>${t('vb_reset')}</button></div>`));
+
+    root.querySelectorAll('.panel[data-i]').forEach(p=>{
+      const i=+p.dataset.i;
+      attachScoreGesture(p,{ enabled:()=>!s.matchOver, onInc:(k)=>add(i,k), onDec:()=>dec(i) });
+    });
+    root.querySelectorAll('[data-name]').forEach(inp=>inp.onchange=()=>{ s.names[+inp.dataset.name]=inp.value||"隊伍"; save(); });
+    root.querySelector('[data-end]').onclick=()=>endSet(true);
+    root.querySelector('[data-switch]').onclick=switchSides;
+    root.querySelector('[data-reset]').onclick=()=>resetMain(false);
+    root.querySelector('[data-h]').onclick=()=>showRules(t('rules_vb'),[
+      "五戰三勝制，先贏 3 局者勝。",
+      "第 1–4 局：先得 25 分，且須領先 2 分（無上限）。",
+      "第 5 局（決勝局）：先得 15 分，且須領先 2 分。",
+      "達標且領先 2 分時自動結束此局；先贏 3 局自動結束比賽。",
+      "計分手勢：點一下／上滑 = +1，下滑 = −1。",
+      "「結束此局」為手動備援，由裁判判定（平分時不可結束）。"
+    ]);
+  }
+  return { mount, save, resetMain };
+})();
+
+/* ============================================================
+   BADMINTON — BWF rally point, best-of-3, cap 30, auto win
+   ============================================================ */
+const Badminton = (function(){
+  const KEY="badminton";  // storage key: scoreboard.v3.badminton
+  let s, root, fx=null, crown=null;
+  function fresh(mode){
+    mode = mode || 'singles';
+    const names = mode==='doubles' ? ["Team A","Team B"] : ["選手一","選手二"];
+    return { mode, names, score:[0,0], games:[0,0], gameNo:1, server:0, matchOver:false, winner:null };
+  }
+  function load_(){
+    try{ s=load(KEY, fresh()); } catch(e){ s=fresh(); }
+    if(!s.mode) s.mode='singles';
+    if(s.server===undefined) s.server=0;
+    if(s.matchOver===undefined){ s.matchOver=false; s.winner=null; }
+  }
+  function save(){ persist(KEY, s); }
+  function mount(elm){ root=elm; load_(); render(); }
+  function setMode(m){
+    if(m===s.mode){ return; }
+    if(!confirm(currentLang==='zh'?"切換打法會重設本場羽毛球比賽，確定？":"Switching mode will reset this match, continue?")){ render(); return; }
+    s=fresh(m); crown=null; fx=null; save(); render();
+  }
+
+  // Rally-point: whoever wins the rally scores AND serves next. So server = last scorer.
+  function add(i,kind){ if(s.matchOver) return; crown=null; fx={i,kind:kind==='up'?'up':'tap'}; s.score[i]++; s.server=i; afterScore(i); }
+  function dec(i){ if(s.matchOver) return; crown=null; fx={i,kind:'down'}; s.score[i]=Math.max(0,s.score[i]-1); save(); render(); }
+  function afterScore(i){
+    const me=s.score[i], opp=s.score[1-i];
+    if((me>=21 && me-opp>=2) || me>=30){ endGame(false); return; }
+    save(); render();
+  }
+  function endGame(manual){
+    const [a,b]=s.score;
+    if(a===b){ if(manual) alert("目前平分，無法結束此局。"); return; }
+    const w=a>b?0:1;
+    s.games[w]++; crown=w; fx=null;
+    if(s.games[w]>=2){ s.matchOver=true; s.winner=w; }
+    else { s.score=[0,0]; s.gameNo++; s.server=w; } // winner of previous game serves first
+    save(); render();
+  }
+  function resetMain(skip){ if(!skip && !confirm(currentLang==='zh'?"確定要重設整場羽毛球比賽嗎？":"Reset entire badminton match?")) return; s=fresh(s.mode); crown=null; fx=null; save(); render(); }
+  function gamePointHint(i){
+    const me=s.score[i], opp=s.score[1-i];
+    if(me>=29) return me>=opp;
+    return me>=20 && me-opp>=1;
+  }
+  function serveSide(){ return s.score[s.server]%2===0 ? "右場" : "左場"; }
+  function switchHint(){
+    if(s.gameNo===3 && !s.matchOver){ const m=Math.max(s.score[0],s.score[1]); if(m>=11 && s.score[0]!==s.score[1]) return currentLang==='zh'?"決勝局：領先者達 11 分，請交換場地":"Final: leader at 11, swap courts"; }
+    return "";
+  }
+  function render(){
+    const f=fx; fx=null;
+    const dbl=s.mode==='doubles';
+    root.innerHTML="";
+    const cap=(s.score[0]>=28||s.score[1]>=28)?" · 30":"";
+    const modeLabel = dbl ? t('bd_doubles') : t('bd_singles');
+    root.appendChild(el(`<div class="head">
+      <div><h2>🏸 ${t('bd_title')}</h2><div class="sub">${modeLabel} · 三戰兩勝 · 第 ${s.gameNo} 局 · 21 (max 30)</div></div>
+      <button class="help" data-h>?</button></div>`));
+    root.appendChild(el(`<div class="modebar">
+      <button class="modebtn ${dbl?'':'active'}" data-mode="singles">${t('bd_singles')}</button>
+      <button class="modebtn ${dbl?'active':''}" data-mode="doubles">${t('bd_doubles')}</button></div>`));
+    if(s.matchOver) root.appendChild(el(`<div class="win-banner">🏆 ${esc(s.names[s.winner])} ${t('bd_matchOver')}</div>`));
+    if(!s.matchOver) root.appendChild(el(`<div class="pt-hint" style="text-align:center;margin:0 0 6px">${t('bd_serveSide')}：${esc(s.names[s.server])} · ${serveSide()}（${s.score[s.server]%2===0?'偶':'奇'}數）</div>`));
+    const hint=switchHint();
+    if(hint) root.appendChild(el(`<div class="pt-hint" style="text-align:center;margin:0 0 6px">${hint}</div>`));
+    const panels=el(`<div class="panels"></div>`);
+    [0,1].forEach(i=>{
+      const lead=s.score[i]>s.score[1-i] && !s.matchOver;
+      const serving=s.server===i && !s.matchOver;
+      const fxCls=(f && f.i===i)?'fx-'+f.kind:'';
+      const moCls=s.matchOver?(s.winner===i?'winner':'loser'):'';
+      const showCrown=crown===i || (s.matchOver && s.winner===i);
+      panels.appendChild(el(`<div class="panel ${lead?'lead':''} ${serving?'serving':''} ${fxCls} ${moCls}" data-i="${i}">
+        ${showCrown?'<div class="crown">👑</div>':''}
+        ${(s.matchOver&&s.winner===i)?'<div class="stamp">勝</div>':''}
+        <input class="pname" value="${esc(s.names[i])}" data-name="${i}">
+        <div class="sub-counter">${t('bd_games')}: ${s.games[i]}</div>
+        <div class="badge ${serving?'on':''}">${t('bd_serveSide')} · ${serveSide()}</div>
+        <div class="pt-hint">${gamePointHint(i)?'⚡ '+t('bd_gamePoint'):''}</div>
+        <div class="score">${s.score[i]}</div>
+        <div class="tap-hint">${t('vb_tapInfo')}</div>
+      </div>`));
+    });
+    root.appendChild(panels);
+    root.appendChild(el(`<div class="controls">
+      <button class="ctl" data-end ${s.matchOver?'disabled':''}>${t('bd_endGame')}</button>
+      <button class="ctl" data-srv ${s.matchOver?'disabled':''}>${t('bd_serve')}</button>
+      <button class="ctl warn" data-reset>${t('bd_reset')}</button></div>`));
+
+    root.querySelectorAll('.panel[data-i]').forEach(p=>{
+      const i=+p.dataset.i;
+      attachScoreGesture(p,{ enabled:()=>!s.matchOver, onInc:(k)=>add(i,k), onDec:()=>dec(i) });
+    });
+    root.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+    root.querySelectorAll('[data-name]').forEach(inp=>inp.onchange=()=>{ s.names[+inp.dataset.name]=inp.value||(dbl?"隊伍":"選手"); save(); });
+    root.querySelector('[data-end]').onclick=()=>endGame(true);
+    root.querySelector('[data-srv]').onclick=()=>{
+      const pick=confirm(currentLang==='zh'?"由「"+s.names[0]+"」發球嗎？\n（確定 = "+s.names[0]+"，取消 = "+s.names[1]+")":"Set server to "+s.names[0]+(pick?" (OK) or "+s.names[1]+" (Cancel)" : "")+"\n(OK = "+s.names[0]+", Cancel = "+s.names[1]+")");
+      s.server=pick?0:1; save(); render();
+    };
+    root.querySelector('[data-reset]').onclick=()=>resetMain(false);
+    root.querySelector('[data-h]').onclick=()=>showRules(t('rules_bd'),[
+      "三戰兩勝制，先贏 2 局者勝。",
+      "每局先得 21 分且領先 2 分；或 29–29 後先得 30 分（封頂）自動勝出。",
+      "得分即得發球權：贏得該回合的一方得分並取得下一次發球（現行 BWF）。",
+      "發球方比分為偶數時站右場、奇數時站左場（含 0）。",
+      dbl
+        ? "雙打：同隊由同一位球員持續發球，直到對方贏得回合才換邊發球。"
+        : "單打：自己得分則續發；對手贏得回合則換成對手發球。",
+      "計分手勢：點一下／上滑 = +1，下滑 = −1。「指定發球方」可手動設定發球方。",
+      "交換場地：第 1、2 局結束後；決勝局領先者達 11 分時。"
+    ]);
+  }
+  return { mount, save };
+})();
+
+/* ============================================================
+   PICKLEBALL — singles, side-out scoring, auto win at 11 by 2
+   ============================================================ */
+const Pickleball = (function(){
+  const KEY="pickleball";  // storage key: scoreboard.v3.pickleball
+  let s, root, fx=null, crown=null;
+  function fresh(mode){
+    mode = mode || 'singles';
+    const names = mode==='doubles' ? ["Team A","Team B"] : ["選手一","選手二"];
+    return { mode, names, score:[0,0], server:0, serverNum:(mode==='doubles'?2:1), target:11, matchOver:false, winner:null };
+  }
+  function load_(){
+    try{ s=load(KEY, fresh()); } catch(e){ s=fresh(); }
+    if(!s.mode) s.mode='singles';
+    if(s.serverNum===undefined) s.serverNum=(s.mode==='doubles'?2:1);
+    if(s.matchOver===undefined){ s.matchOver=false; s.winner=null; }
+  }
+  function save(){ persist(KEY, s); }
+  function mount(elm){ root=elm; load_(); render(); }
+  function setMode(m){
+    if(m===s.mode){ return; }
+    if(!confirm(currentLang==='zh'?"切換打法會重設本場皮克球比賽，確定？":"Switching mode will reset this match, continue?")){ render(); return; }
+    s=fresh(m); crown=null; fx=null; save(); render();
+  }
+
+  // only the current server's side can score; serving side keeps the serve when it scores
+  function add(i,kind){
+    if(s.matchOver) return;
+    if(i!==s.server) return; // receiver tap does nothing (side-out scoring)
+    crown=null; fx={i,kind:kind==='up'?'up':'tap'};
+    s.score[i]++;            // (doubles: the two servers would swap court sides here — presentational only)
+    if(s.score[i]>=s.target && s.score[i]-s.score[1-i]>=2){ s.matchOver=true; s.winner=i; crown=i; fx=null; }
+    save(); render();
+  }
+  function dec(i){ if(s.matchOver) return; crown=null; fx={i,kind:'down'}; s.score[i]=Math.max(0,s.score[i]-1); save(); render(); }
+  // 換發球 = a fault by the serving side
+  function fault(){
+    if(s.matchOver) return;
+    if(s.mode==='doubles' && s.serverNum===1){
+      s.serverNum=2; save(); render(); toast(currentLang==='zh'?t('pk_fault'):t('pk_fault')); return;
+    }
+    // singles: any fault is a side-out. doubles: server #2 fault is a side-out.
+    s.server=1-s.server; s.serverNum=1; save(); render(); toast(currentLang==="zh"?"交換成發球方「"+s.names[s.server]+"」":"Switched to serve "+s.names[s.server]);
+  }
+  function resetMain(skip){ if(!skip && !confirm(currentLang==='zh'?"確定要重設整場皮克球比賽嗎？":"Reset entire pickleball match?")) return; s=fresh(s.mode); crown=null; fx=null; save(); render(); }
+  function side(i){ return s.score[i]%2===0 ? "右" : "左"; } // server stands right when own score is even
+  function anno(){ // serving team's perspective: your-their-server#
+    return s.mode==='doubles'
+      ? s.score[s.server]+"-"+s.score[1-s.server]+"-"+s.serverNum
+      : s.score[s.server]+"-"+s.score[1-s.server];
+  }
+  function render(){
+    const f=fx; fx=null;
+    const dbl=s.mode==='doubles';
+    root.innerHTML="";
+    const modeLabel = dbl ? t('pk_doubles') : t('pk_singles');
+    root.appendChild(el(`<div class="head">
+      <div><h2>🥒 ${t('pk_title')}</h2><div class="sub">${modeLabel} · 換發計分 · 目標 11（領先 2）</div></div>
+      <button class="help" data-h>?</button></div>`));
+    root.appendChild(el(`<div class="modebar">
+      <button class="modebtn ${dbl?'':'active'}" data-mode="singles">${t('pk_singles')}</button>
+      <button class="modebtn ${dbl?'active':''}" data-mode="doubles">${t('pk_doubles')}</button></div>`));
+    if(s.matchOver) root.appendChild(el(`<div class="win-banner">🏆 ${esc(s.names[s.winner])} ${t('pk_matchOver')}</div>`));
+    if(!s.matchOver) root.appendChild(el(`<div class="pt-hint" style="text-align:center;margin:0 0 6px">${t('bd_serveSide')}：${esc(s.names[s.server])} 唱分 <b style="color:var(--accent2)">${anno()}</b> ${side(s.server)}場${dbl?'（第 '+s.serverNum+' 發球員）':''}</div>`));
+    const panels=el(`<div class="panels"></div>`);
+    [0,1].forEach(i=>{
+      const serving=s.server===i && !s.matchOver;
+      const lead=s.score[i]>s.score[1-i] && !s.matchOver;
+      const fxCls=(f && f.i===i)?'fx-'+f.kind:'';
+      const moCls=s.matchOver?(s.winner===i?'winner':'loser'):'';
+      const showCrown=crown===i || (s.matchOver && s.winner===i);
+      panels.appendChild(el(`<div class="panel ${lead?'lead':''} ${serving?'serving':''} ${fxCls} ${moCls}" data-i="${i}">
+        ${showCrown?'<div class="crown">👑</div>':''}
+        ${(s.matchOver&&s.winner===i)?'<div class="stamp">勝</div>':''}
+        <input class="pname" value="${esc(s.names[i])}" data-name="${i}">
+        <div class="badge ${serving?'on':''}">${t('bd_serveSide')}${dbl?' · 第'+s.serverNum+'發':''} · ${side(i)}場</div>
+        <div class="score">${s.score[i]}</div>
+        ${serving?`<div class="serve-anno">${anno()}</div>`:''}
+        <div class="tap-hint">${serving?t('vb_tapInfo'):(currentLang?"接發方不計分":"")} · 下滑 −1</div>
+      </div>`));
+    });
+    root.appendChild(panels);
+    root.appendChild(el(`<div class="controls">
+      <button class="ctl" data-so ${s.matchOver?'disabled':''}>${t('bd_sideOut')}</button>
+      <button class="ctl" data-first ${s.matchOver?'disabled':''}>${currentLang?"選擇首發方":"Select First Server"}</button>
+      <button class="ctl warn" data-reset>${t('pk_reset')}</button></div>`));
+
+    root.querySelectorAll('.panel[data-i]').forEach(p=>{
+      const i=+p.dataset.i;
+      attachScoreGesture(p,{ enabled:()=>!s.matchOver, onInc:(k)=>add(i,k), onDec:()=>dec(i) });
+    });
+    root.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+    root.querySelectorAll('[data-name]').forEach(inp=>inp.onchange=()=>{ s.names[+inp.dataset.name]=inp.value||(dbl?"隊伍":"選手"); save(); });
+    root.querySelector('[data-so]').onclick=fault;
+    root.querySelector('[data-first]').onclick=()=>{
+      const pick=confirm(currentLang==='zh'?"由「"+s.names[0]+"」首先發球嗎？\n（確定 = "+s.names[0]+"，取消 = "+s.names[1]+")":"First server to "+s.names[0]+(pick?" (OK) or "+s.names[1]+" (Cancel)" : "")+"\n(OK = "+s.names[0]+", Cancel = "+s.names[1]+")");
+      s.server=pick?0:1; s.serverNum=(dbl?2:1); save(); render();
+    };
+    root.querySelector('[data-reset]').onclick=()=>resetMain(false);
+    root.querySelector('[data-h]').onclick=()=>showRules(t('rules_pk'),
+      dbl ? [
+        "單局制，先得 11 分且領先 2 分者自動勝出。",
+        "傳統換發計分（side-out）：只有發球方得分才計分。",
+        "開局採 0-0-2：首發隊直接由第 2 發球員開始，僅有一次失誤機會即換邊。",
+        "計分手勢：發球方點一下／上滑 = +1；任一方下滑 = −1。失誤請按「換發球」。"
+      ] : [
+        "單局制，先得 11 分且領先 2 分者自動勝出。",
+        "換發計分（side-out）：只有發球方得分才計分。",
+        "計分手勢：發球方點一下／上滑 = +1；任一方下滑 = −1。",
+      ]);
+  }
+  return { mount, save };
+})();
+
+/* ============================================================
+   GOLF — SINGLE PLAYER STROKE PLAY, 18 HOLES
+   ============================================================ */
+const Golf = (function(){
+  const KEY="golf";  // storage key: scoreboard.v3.golf
+  let s, root, fx=null;
+
+  function fresh(){
+    const gSet = load('golf_defaultPar', 4);
+    return {
+      name:"選手",
+      pars:Array(18).fill(gSet),
+      strokes:Array(18).fill(0),
+      hole:0
+    };
+  }
+  function load_(){
+    try{ s=load(KEY, fresh()); } catch(e){ s=fresh(); }
+    // migrate from old format
+    if(!s.name || Array.isArray(s.name)){
+      s = fresh();
+    }
+    if(s.pars && s.pars.length !== 18) s.pars = Array(18).fill(s.pars[0] || 4);
+    if(!s.strokes || !Array.isArray(s.strokes)) s.strokes = Array(18).fill(0);
+    if(s.hole === undefined) s.hole = 0;
+  }
+  function save(){ persist(KEY, s); }
+  function mount(elm){ root=elm; load_(); render(); }
+  function stroke(p,kind){
+    // single player: 'p' is ignored (always the one player)
+    const d = kind==='down' ? -1 : 1;
+    fx={kind:kind==='down'?'down':(kind==='up'?'up':'tap')};
+    s.strokes[s.hole]=Math.max(0,s.strokes[s.hole]+d); save(); render();
+  }
+  function parAtHole(d){
+    s.pars[s.hole]=Math.max(1,s.pars[s.hole]+d); save(); render();
+  }
+  function nav(d){ s.hole=Math.min(17,Math.max(0,s.hole+d)); save(); render(); }
+  function resetMain(skip){
+    if(!skip && !confirm(currentLang==='zh'?"確定要重設整輪高爾夫嗎？":"Reset entire golf round?")) return;
+    s=fresh(); fx=null; save(); render();
+  }
+
+  function cellClass(strokes, holePar){
+    if(strokes===0) return "";
+    const d=strokes-holePar;
+    if(d<=-2) return "eagle";
+    if(d===-1) return "birdie";
+    if(d===0) return "par";
+    if(d===1) return "bogey";
+    if(d===2) return "dbogey";
+    return "other";
+  }
+  function totals(){
+    let strokes=0, parPlayed=0;
+    for(let h=0;h<18;h++){ if(s.strokes[h]>0){ strokes+=s.strokes[h]; parPlayed+=s.pars[h]; } }
+    return { strokes, vsPar:strokes-parPlayed, completed:18 };
+  }
+  function fmtVs(v){ if(v===0) return "E"; return (v>0?"+":MINUS)+Math.abs(v); }
+  function isComplete(){
+    for(let h=0;h<18;h++){ if(s.strokes[h]===0) return false; }
+    return true;
+  }
+  function summary(){
+    if(!isComplete()) return null;
+    const t = totals();
+    return {
+      totalHoles: 18,
+      totalStrokes: t.strokes,
+      vsPar: fmtVs(t.vsPar)
+    };
+  }
+
+  function render(){
+    const f=fx; fx=null;
+    root.innerHTML="";
+    root.appendChild(el(`<div class="head">
+      <div><h2>⛳ ${t('gf_title')}</h2><div class="sub">${t('gf_hole')} ${s.hole+1} / 18 · ${t('gf_par')} ${s.pars[s.hole]}</div></div>
+      <button class="help" data-h>?</button></div>`));
+
+    const completed = isComplete();
+    const summary_data = summary();
+    if(completed && summary_data){
+      const winText = summary_data.vsPar === 'E' ? currentLang?"平手！總桿數 "+summary_data.totalStrokes:"Tied! Total "+summary_data.totalStrokes :
+                      (summary_data.vsPar[0]==='+' ? '+'+summary_data.vsPar : MINUS+Math.abs(parseInt(summary_data.vsPar)));
+      root.appendChild(el(`<div class="win-banner">🏁 ${t('gf_result')}：${summary_data.totalStrokes} 桿 (${summary_data.vsPar})<br><button class="ctl warn" data-greset>${t('gf_reset')}</button></div>`));
+    }
+
+    // hole + par editor
+    root.appendChild(el(`<div class="golf-hole">
+      <div class="holebox"><div class="lbl">${t('gf_hole')}</div><div class="hnum">${s.hole+1} / 18</div></div>
+      <div class="par-edit">
+        <button class="pbtn" data-par="-1">−</button>
+        <div class="par-val">${t('gf_par')} ${s.pars[s.hole]}</div>
+        <button class="pbtn" data-par="1">+</button>
+      </div></div>`));
+
+    // single player stroke panel
+    const panels=el(`<div class="panels"></div>`);
+    const cur=s.strokes[s.hole];
+    const fxCls=(f ? 'fx-'+f.kind : '');
+    panels.appendChild(el(`<div class="panel ${fxCls}">
+      <input class="pname" value="${esc(s.name)}" data-name="self">
+      <div class="sub-counter">${t('gf_scores')} · ${t('gf_hole')} ${s.hole+1}</div>
+      <div class="score">${cur}</div>
+      <div class="tap-hint">${t('vb_tapInfo')}</div>
+    </div>`));
+    root.appendChild(panels);
+
+    // summary stats (always visible)
+    const t_data = totals();
+    root.appendChild(el(`<div class="gsummary">
+      <div class="gs-item"><div class="gs-label">${t('gf_totalHoles')}</div><div class="gs-value">${t_data.completed}/18</div></div>
+      <div class="gs-item"><div class="gs-label">${t('gf_totalScore')}</div><div class="gs-value">${t_data.strokes}</div></div>
+      <div class="gs-item"><div class="gs-label">${t('gf_vsPar')}</div><div class="gs-value">${fmtVs(t_data.vsPar)}</div></div>
+    </div>`));
+
+    // nav controls
+    root.appendChild(el(`<div class="controls">
+      <button class="ctl" data-nav="-1" ${s.hole===0?'disabled':''}>${t('gf_prevHole')}</button>
+      <button class="ctl primary" data-nav="1" ${s.hole===17?'disabled':''}>${t('gf_nextHole')}</button>
+      <button class="ctl warn" data-reset>${t('gf_reset')}</button></div>`));
+
+    // per-hole grid
+    root.appendChild(el(`<div class="sub-counter" style="margin-top:14px">${t('gf_perHole')}</div>`));
+    const grid=el(`<div class="golf-grid"></div>`);
+    for(let h=0;h<18;h++){
+      const st=s.strokes[h];
+      const cls=cellClass(st,s.pars[h]);
+      grid.appendChild(el(`<div class="gcell ${cls} ${h===s.hole?'cur':''}">
+        <span class="gh">${h+1}</span><span class="gs">${st||MINUS}</span></div>`));
+    }
+    root.appendChild(grid);
+
+    // legend
+    root.appendChild(el(`<div class="golf-legend">
+      <span><i style="background:var(--eagle)"></i>${t('gf_eagle')}</span>
+      <span><i style="background:var(--birdie)"></i>${t('gf_birdie')}</span>
+      <span><i style="background:var(--par)"></i>${t('gf_par')}</span>
+      <span><i style="background:var(--bogey)"></i>${t('gf_bogey')}</span>
+      <span><i style="background:var(--dbogey)"></i>${t('gf_dbogey')}</span>
+      <span><i style="background:var(--other)"></i>${t('gf_other')}</span></div>`));
+
+    // events
+    // Golf: attach swipe/tap gesture to score panel (same as other sports)
+    const gpanel=panels.querySelector('.panel');
+    if(gpanel) attachScoreGesture(gpanel, { onInc:(k)=>stroke(gpanel,k), onDec:()=>stroke(gpanel,'down') });
+    root.querySelectorAll('[data-par]').forEach(b=>b.onclick=()=>parAtHole(+b.dataset.par));
+    root.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>nav(+b.dataset.nav));
+    root.querySelector('[data-name]').onchange=()=>{ s.name=inp.value||"選手"; save(); };
+    const inp=root.querySelector('[data-name]');
+    if(inp) inp.onchange=()=>{ s.name=inp.value||"選手"; save(); };
+    root.querySelector('[data-reset]').onclick=()=>resetMain(false);
+    const gr=root.querySelector('[data-greset]'); if(gr) gr.onclick=()=>resetMain(false);
+    root.querySelector('[data-h]').onclick=()=>showRules(t('rules_gf'),[
+      "18 洞桿數賽。",
+      "每洞標準桿預設 Par 4，可用 +/− 調整。",
+      "計分手勢：點一下 = +1，下滑 = −1。",
+      "完成所有 18 洞後自動顯示總結。",
+      "結算後仍可修改桿數。"
+    ]);
+  }
+  return { mount, save };
+})();
+
+/* ============================================================
+   SETTINGS PAGE — language toggle + golf defaults
+   ============================================================ */
+function mountSettings(){
+  const view = document.getElementById('view-settings');
+  view.innerHTML = "";
+
+  // Language section
+  const langDict = LANGS[currentLang];
+  view.appendChild(el(`<div class="settings-section">
+    <h3>${t('settings_language')}</h3>
+    <div class="settings-row">
+      <span class="settings-label">${t('settings_select')}</span>
+      <div class="toggle">
+        <button class="toggle-btn ${currentLang==='zh'?'active':''}" data-lang="zh">中</button>
+        <button class="toggle-btn ${currentLang==='en'?'active':''}" data-lang="en">EN</button>
+      </div>
+    </div>
+  </div>`));
+
+  // Golf default Par section
+  view.appendChild(el(`<div class="settings-section">
+    <h3>${t('settings_golf_global')}</h3>
+    <div class="settings-row">
+      <span class="settings-label">${t('settings_golf_default4')}</span>
+      <span class="settings-value" id="gf-global-par">4</span>
+    </div>
+  </div>`));
+
+  // Data section
+  view.appendChild(el(`<div class="settings-section">
+    <h3>${t('settings_data')}</h3>
+    <div class="settings-row">
+      <span class="settings-label">${t('settings_clear_data')}</span>
+      <button class="ctl warn" id="clear-all">${currentLang?"清除":"Clear"}</button>
+    </div>
+  </div>`));
+
+  // Done button
+  view.appendChild(el(`<button class="settings-done" id="settings-done">${t('settings_done')}</button>`));
+
+  // Event handlers
+  view.querySelectorAll('[data-lang]').forEach(btn => {
+    btn.onclick = () => {
+      currentLang = btn.dataset.lang;
+      saveLang(currentLang);
+      // Re-render all active views
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.sport === 'settings'));
+      switchTo(currentTab);
+      mountSettings();
+    };
+  });
+
+  const clearBtn = view.querySelector('#clear-all');
+  if(clearBtn) clearBtn.onclick = () => {
+    if(!confirm(currentLang==='zh'?t('settings_clear_confirm'):t('settings_clear_confirm').replace(t('settings_select'),t('settings_clear_confirm')))) return;
+    localStorage.clear();
+    switchTo(currentTab);
+    mountSettings();
+  };
+
+  const doneBtn = view.querySelector('#settings-done');
+  if(doneBtn) doneBtn.onclick = () => {
+    const lastTab = load("activeTab", "volleyball");
+    switchTo(lastTab);
+  };
+}
+
+/* ---------- tab routing ---------- */
+const MODULES={ volleyball:Volleyball, badminton:Badminton, pickleball:Pickleball, golf:Golf };
+let currentTab = load("activeTab","volleyball");
+const mounted={};
+function switchTo(sport){
+  currentTab = sport;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.sport===sport));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const view=document.getElementById('view-'+sport);
+  view.classList.add('active');
+  persist("activeTab", sport);
+
+  // Update all i18n text nodes
+  updateI18nTexts();
+
+  if(!mounted[sport] || sport === 'settings'){
+    if(sport === 'settings'){
+      mountSettings();
+    } else {
+      MODULES[sport].mount(view);
+    }
+    mounted[sport] = true;
+  } else {
+    // Re-render for language switch
+    if(MODULES[sport] && MODULES[sport].save){
+      // need a way to re-render; use a re-mount approach
+      mounted[sport] = false;
+      MODULES[sport].mount(view);
+      mounted[sport] = true;
+    }
+  }
+}
+document.getElementById('tabs').addEventListener('click', e=>{
+  const tab=e.target.closest('.tab'); if(tab) switchTo(tab.dataset.sport);
+});
+document.getElementById('modal').addEventListener('click', e=>{
+  if(e.target.id==='modal') e.target.classList.remove('on');
+});
+// Init: switch to last active tab
+switchTo(currentTab);
+</script>
+</body>
+</html>
