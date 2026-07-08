@@ -14,15 +14,11 @@
 ## 快速使用
 
 ### 方式一：線上使用（推薦）
-直接在瀏覽器開啟：
-
-```
-https://hao-github-0216.github.io/scoreboard/
-```
+[🔗 點擊打開計分版](https://hao-github-0216.github.io/scoreboard/)
 
 ### 方式二：本地使用
-1. 將 `index.html` 下載到電腦
-2. 用瀏覽器直接開啟 `index.html`
+1. 到 [原始碼頁面](https://github.com/hao-github-0216/scoreboard) 下載 `index.html`
+2. 用瀏覽器直接開啟
 
 ## 操作說明
 
