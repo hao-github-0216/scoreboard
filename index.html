@@ -439,7 +439,7 @@ const Volleyball = (function(){
     const t=target();
     root.innerHTML="";
     root.appendChild(el(`<div class="head">
-      <div><h2>🏐 ${t('vb_title')}</h2><div class="sub">${t('vb_firstHalf')} · ${t('vb_sets')} ${s.setNo} · ${t(t('vb_sets'))} ${t('vb_suddenDeath')}</div></div>
+      <div><h2>🏐 ${t('vb_title')}</h2><div class="sub">${t('vb_firstHalf')} · ${t('vb_sets')} ${s.setNo} · ${t('vb_sets')} ${t('vb_suddenDeath')}</div></div>
       <button class="help" data-h>?</button></div>`));
     if(s.matchOver) root.appendChild(el(`<div class="win-banner">🏆 ${esc(s.names[s.winner])} ${t('vb_matchOver')}</div>`));
     const panels=el(`<div class="panels"></div>`);
@@ -970,8 +970,12 @@ function switchTo(sport){
   if(!mounted[sport] || sport === 'settings'){
     if(sport === 'settings'){
       mountSettings();
-    } else {
+    } else if(MODULES[sport]){
       MODULES[sport].mount(view);
+    } else {
+      // Invalid sport tab — fallback to volleyball
+      switchTo("volleyball");
+      return;
     }
     mounted[sport] = true;
   } else {
@@ -990,8 +994,11 @@ document.getElementById('tabs').addEventListener('click', e=>{
 document.getElementById('modal').addEventListener('click', e=>{
   if(e.target.id==='modal') e.target.classList.remove('on');
 });
-// Init: switch to last active tab
-switchTo(currentTab);
+// Clear stale activeTab to ensure volleyball shows on first load
+  try { const at = load('activeTab', null); if(at && !MODULES[at]) localStorage.removeItem(VER + '.activeTab'); } catch(e) {}
+// Init: switch to last active tab (safe)
+if(MODULES[currentTab] && MODULES[currentTab].mount){ switchTo(currentTab); }
+else { switchTo("volleyball"); }
 </script>
 </body>
 </html>
